@@ -16,10 +16,10 @@ const Banner = () => {
         {/* Content */}
         <div className={bannerStyles.content}>
             <div className={bannerStyles.contentInner}>
-                <h1 className={bannerStyles.title} style={{fontFamily:"'Dancing Script', cursive'"}}>
+                <h1 className={bannerStyles.title} style={{fontFamily:"'Dancing Script', cursive"}}>
                     Ocean's Legacy
                 </h1>
-                <p className={bannerStyles.description}>
+                <p className={bannerStyles.description} style={{fontFamily:"'Roboto', cursive"}}>
                     An epic adventure beneath the waves. Explore the mysteries of the deep ocean and discover treasures beyond
                     imagination in this breathtaking cinematic experience. </p>
                 
@@ -32,7 +32,7 @@ const Banner = () => {
                         </div>
                         <span className={bannerStyles.ratingText}>4.8/5</span>
                     </div>
-                    <div className={bannerStyles.genreText}>Adventure • Fantasy • Drama</div>
+                    <div style={{fontFamily:"'Lucida Console', cursive"}} className={bannerStyles.genreText}>Adventure • Fantasy • Drama</div>
 
             </div>
             <div className={bannerStyles.buttonsContainer}>

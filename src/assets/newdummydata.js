@@ -13,7 +13,7 @@ export const sampleNews = [
       "A surprise midnight premiere left fans stunned with groundbreaking VFX and an unforgettable score. Critics call it a new benchmark for cinematic spectacle.",
     image: N1,
     time: "2h ago",
-    date: "Sep 14, 2025",
+    date: "Feb 23, 2025",
     category: "Premiere",
     source: "CinePulse"
   },
@@ -50,7 +50,7 @@ export const sampleNews = [
       "Early pre-sales and industry tracking estimate a massive opening weekend — analysts say it's the comeback the genre needed.",
     image: N5,
     time: "3d ago",
-    date: "Sep 11, 2025",
+    date: "Feb 11, 2025",
     category: "Box Office",
     source: "MarketReel"
   },
@@ -61,7 +61,7 @@ export const sampleNews = [
       "From fabric to silhouette, the costume designer explains how subtle choices shaped characters' journeys and the film's oppressive world.",
     image: N6,
     time: "4d ago",
-    date: "Sep 10, 2025",
+    date: "Feb 10, 2025",
     category: "Design",
     source: "CineCraft"
   },

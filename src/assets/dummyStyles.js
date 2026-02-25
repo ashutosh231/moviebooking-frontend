@@ -20,7 +20,7 @@ export const bannerStyles = {
   starsContainer: "flex",
   star: "h-4 w-4 sm:h-5 sm:w-5 text-yellow-400",
   ratingText: "ml-2 text-white text-sm sm:text-base",
-  genreText: "text-gray-300 text-xs sm:text-sm",
+  genreText: "text-gray-300 text-xs sm:text-sm md:text-base font-medium tracking-wide flex items-center gap-2 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]",
   
   // Button styles
   buttonsContainer: "flex flex-wrap gap-3 font-[pacifico]",
