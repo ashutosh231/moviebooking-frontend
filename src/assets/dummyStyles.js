@@ -289,7 +289,7 @@ export const formatDuration = (mins) => {
 // Add to src/assets/dummyStyles.js
 export const contactStyles = {
   // Page container styles
-  pageContainer: "min-h-screen pt-15 bg-black text-white py-8 px-4 sm:px-6 lg:px-8 relative overflow-hidden",
+  pageContainer: "min-h-screen pt-16 bg-black text-white py-8 px-4 sm:px-6 lg:px-8 relative overflow-hidden",
   
   // Background elements
   bgGradient: "absolute top-0 left-0 w-full h-48 bg-gradient-to-b from-red-900/20 to-transparent",
@@ -751,7 +751,7 @@ export const seatSelectorStyles = {
   backButton: "inline-flex items-center gap-2 text-red-300 hover:text-white transition-all px-4 py-3 rounded-xl hover:bg-red-900/20",
   backButtonIcon: "size-6",
   titleContainer: "flex-1 text-center",
-  movieTitle: "text-4xl md:text-6xl py-1 font-bold tracking-wider mb-2 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent",
+  movieTitle: "text-4xl  md:text-6xl py-1 font-bold tracking-wider mb-2 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent",
   showtimeText: "text-sm text-gray-500 mt-1 flex items-center justify-center gap-2",
   
   // Screen
@@ -1326,7 +1326,7 @@ export const movieDetailStyles = {
   bookButton: "px-6 py-2.5 rounded-full bg-gradient-to-r from-red-600 to-red-700 text-white font-bold text-base sm:text-lg shadow-2xl hover:from-red-700 hover:to-red-800 transition-transform transform hover:scale-105",
   
   // Cast section
-  castCard: "bg-gradient-to-br from-black/80 to-gray-900 rounded-2xl p-4 sm:p-8 border border-red-700/20 shadow-2xl",
+  castCard: "bg-gradient-to-br mt-10 from-black/80 to-gray-900 rounded-2xl p-4 sm:p-8 border border-red-700/20 shadow-2xl",
   castTitle: "text-xl sm:text-3xl font-bold mb-4 sm:mb-6 text-red-300 text-center flex items-center justify-center gap-2",
   castIcon: "h-5 w-5",
   castGrid: "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6",
