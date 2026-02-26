@@ -525,81 +525,73 @@ export const moviesStyles = {
 // Add to src/assets/dummyStyles.js
 export const loginStyles = {
   // Page container
-  pageContainer: "min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-950 to-black p-4 relative overflow-hidden",
-  
+  pageContainer: "min-h-screen flex items-center justify-center bg-black p-4 relative overflow-hidden",
+
   // Back button
-  backButtonContainer: "mb-4 sm:mb-6 xl:mb-2 md:mb-0",
-  backButton: "inline-flex xl:-ml-100 md:-ml-30 items-center text-red-400 hover:text-red-300 transition-all duration-300 group focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2",
+  backButtonContainer: "mb-8",
+  backButton: " inline-flex items-center text-red-400 hover:text-red-300 transition-all duration-300 group focus:outline-none font-cinema text-lg",
   backButtonIcon: "mr-2 transform group-hover:-translate-x-1 transition-transform",
-  backButtonText: "font-medium text-sm sm:text-base",
-  
+  backButtonText: "font-cinema text-lg",
+
   // Card styles
-  cardContainer: "relative md:mt-10 bg-gray-900/90 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden border border-gray-700 animate-border",
-  cardHeader: "relative h-2 bg-gradient-to-r from-red-700 via-red-600 to-red-700",
-  cardContent: "px-6 sm:px-8 py-8 sm:py-10",
-  
+  cardContainer: "relative bg-[#181f2a] rounded-2xl shadow-2xl overflow-hidden border-2 border-red-600 animate-border flex flex-col items-center px-4 sm:px-0",
+  cardHeader: "hidden",
+  cardContent: "w-full max-w-[370px] px-6 py-10 mx-auto",
+
   // Header section
-  headerContainer: "text-center mb-6 sm:mb-8",
-  headerIconContainer: "flex justify-center items-center mb-3 sm:mb-4",
+  headerContainer: "text-center mb-7 mt-5 w-full",
+  headerIconContainer: "flex justify-center items-center mb-2",
   headerIcon: "text-red-500 mr-2",
-  headerTitle: "text-3xl sm:text-4xl font-bold text-white font-cinema leading-tight",
-  headerSubtitle: "text-red-200 mt-1 sm:mt-2 font-medium text-sm sm:text-base",
-  
+  headerTitle: "text-4xl font-bold text-white font-cinema leading-tight tracking-wide",
+  headerSubtitle: "text-red-200 mt-1 sm:mt-2 mb-5 font-medium text-sm sm:text-base font-cinema",
+
   // Form styles
-  formContainer: "space-y-4 sm:space-y-6",
-  inputGroup: "mb-4 sm:mb-6",
-  label: "block text-red-100 text-sm font-bold mb-2 font-cinema",
-  inputContainer: "relative",
-  input: "w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-800/60 text-white rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none transition-all duration-200 border border-gray-700 placeholder-gray-500",
-  inputWithIcon: "w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-800/60 text-white rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none transition-all duration-200 border border-gray-700 pr-10",
-  inputIcon: "absolute right-3 top-2.5 sm:top-3",
-  passwordToggle: "absolute inset-y-0 right-0 px-2 sm:px-3 flex items-center focus:outline-none",
+  formContainer: "space-y-6 w-full max-w-[370px] mx-auto",
+  inputGroup: "mb-7 w-[90%] mx-auto",
+  label: "block text-white text-sm font-bold mb-2 font-cinema tracking-wide text-left pl-1",
+  inputContainer: "relative w-full",
+  input: "w-full px-4 py-3 bg-[#23263a] text-white rounded-xl focus:ring-2 focus:ring-red-500 focus:outline-none border border-gray-700 placeholder-gray-400 font-cinema text-base transition-all duration-200 mb-1",
+  inputWithIcon: "w-full px-4 py-3 bg-[#23263a] text-white rounded-xl focus:ring-2 focus:ring-red-500 focus:outline-none border border-gray-700 pr-10 placeholder-gray-400 font-cinema text-base transition-all duration-200 mb-1",
+  inputIcon: "absolute right-3 top-1/2 -translate-y-1/2 flex items-center",
+  passwordToggle: "absolute inset-y-0 right-0 px-3 flex items-center focus:outline-none",
   passwordToggleIcon: "text-red-300",
-  
+
   // Submit button
-  submitButton: "w-full bg-gradient-to-r from-red-700 to-red-800 text-white font-bold py-2.5 sm:py-3 px-4 rounded-full hover:opacity-90 transition-all cursor-pointer duration-300 transform focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 shadow-lg shadow-red-900/30",
+  submitButton: "w-[90%] cursor-pointer bg-gradient-to-r from-red-600 to-red-700 text-white font-bold py-3 mx-auto rounded-full hover:opacity-90 transition-all duration-300 shadow-lg shadow-red-900/30 font-cinema text-lg tracking-wide flex items-center justify-center  gap-2 mt-2 mb-1",
   submitButtonDisabled: "opacity-80 cursor-not-allowed",
   loadingSpinner: "animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2",
-  buttonContent: "flex items-center justify-center",
+  buttonContent: "flex items-center justify-center gap-2 ",
   buttonIcon: "mr-2",
-  buttonText: "font-cinema text-sm sm:text-base",
-  
+  buttonText: "font-cinema text-lg",
+
   // Footer link
-  footerContainer: "text-center mt-6 sm:mt-8",
-  footerText: "text-gray-400 text-sm sm:text-base",
-  footerLink: "text-red-400 hover:text-red-300 font-medium transition duration-200 underline hover:no-underline",
-  
+  footerContainer: "text-center mt-8 w-full",
+  footerText: "text-white text-base font-cinema",
+  footerLink: "text-red-400 hover:text-red-300 font-bold transition duration-200 underline hover:no-underline font-cinema",
+
   // Custom CSS
   customCSS: `
     @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
 
     @keyframes borderAnimation {
       0% {
-        box-shadow: 0 0 0 1px #dc2626, 0 0 20px 2px rgba(220, 38, 38, 0.3);
+        box-shadow: 0 0 0 2px #dc2626, 0 0 24px 4px #dc2626, 0 0 0 8px rgba(220,38,38,0.10);
       }
       50% {
-        box-shadow: 0 0 0 2px #dc2626, 0 0 30px 4px rgba(220, 38, 38, 0.5);
+        box-shadow: 0 0 0 4px #dc2626, 0 0 40px 8px #dc2626, 0 0 0 12px rgba(220,38,38,0.18);
       }
       100% {
-        box-shadow: 0 0 0 1px #dc2626, 0 0 20px 2px rgba(220, 38, 38, 0.3);
+        box-shadow: 0 0 0 2px #dc2626, 0 0 24px 4px #dc2626, 0 0 0 8px rgba(220,38,38,0.10);
       }
     }
 
     .animate-border {
-      animation: borderAnimation 3s infinite ease-in-out;
+      animation: borderAnimation 2.5s infinite ease-in-out;
     }
 
     .font-cinema {
       font-family: 'Bebas Neue', cursive;
-      letter-spacing: 1px;
-    }
-
-    /* small tweak so the top/bottom film strip circles don't overcrowd on very small screens */
-    @media (max-width: 420px) {
-      .absolute.top-0 > div, .absolute.bottom-0 > div {
-        width: 3rem;
-        height: 3rem;
-      }
+      letter-spacing: 1.5px;
     }
   `
 };
