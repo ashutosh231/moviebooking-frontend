@@ -3,6 +3,8 @@ import { loginStyles } from '../assets/dummyStyles';
 import { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import { ArrowLeft,Clapperboard,EyeOff,Film, Popcorn,Eye, } from 'lucide-react';
+import apiClient from '../config/api';
+
 const LoginPage = () => {
     const [formData, setFormData] = useState({
         email: '',
@@ -10,44 +12,54 @@ const LoginPage = () => {
     });
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+
     const goBack = () => {
         window.history.back();
     };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({
             ...prevData,
-            [name]:value,
+            [name]: value,
         }));
     };
-    const handleSubmit = (e) => {   
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsLoading(true);
-        if(!formData.password || formData.password.length < 6){
-            setIsLoading(false);
+        if (!formData.password || formData.password.length < 6) {
             toast.error('Password must be at least 6 characters long');
-            console.warn('Login is Blocked');
             return;
         }
-        console.log('Login Data:', formData);
-        setTimeout(() => {
-            setIsLoading(false);
-            try {
-        const authObj = { isLoggedIn: true, email: formData.email };
-        localStorage.setItem('cine_auth', JSON.stringify(authObj));
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('userEmail', formData.email || '');
-        localStorage.setItem('cine_user_email', formData.email || '');
-        console.log('Auth saved to localStorage:', authObj);
-         } 
-            catch (error) {
-                console.error('Failed to Login:', error);
-            }
-            toast.success('Login Successful! redirecting to Cinema... ');
-            setTimeout(()=>{
+        setIsLoading(true);
+        try {
+            const res = await apiClient.post('/api/auth/login', {
+                email: formData.email,
+                password: formData.password,
+            });
+            const { token, user } = res.data;
+
+            // Save JWT token so authenticated API calls work
+            localStorage.setItem('token', token);
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('userEmail', user?.email || formData.email);
+            localStorage.setItem('cine_user_email', user?.email || formData.email);
+            localStorage.setItem('cine_auth', JSON.stringify({ isLoggedIn: true, email: user?.email || formData.email }));
+            localStorage.setItem('cine_user', JSON.stringify(user || {}));
+
+            toast.success('Login Successful! Redirecting to Cinema...');
+            setTimeout(() => {
                 window.location.href = '/';
-            },2000);
-        },1500);
+            }, 1500);
+        } catch (err) {
+            const msg =
+                err?.response?.data?.message ||
+                (err?.response?.status === 401 ? 'Invalid email or password' : 'Login failed. Please try again.');
+            toast.error(msg);
+            console.error('Login error:', err);
+        } finally {
+            setIsLoading(false);
+        }
     };
   return (
     <div className={loginStyles.pageContainer}>

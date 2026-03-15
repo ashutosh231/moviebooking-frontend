@@ -1942,4 +1942,42 @@ export const adventure = [
 
 // Combined array export (default) so existing code can import easily
 const MOVIES = [...action, ...horror, ...comedy, ...adventure];
+
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+MOVIES.forEach(movie => {
+  if (!movie.slots || movie.slots.length === 0) return;
+  
+  let minTime = new Date("3000-01-01").getTime();
+  movie.slots.forEach(slot => {
+    const t = new Date(slot.time).getTime();
+    if (t < minTime) minTime = t;
+  });
+  
+  if (minTime > 0 && minTime < new Date("3000-01-01").getTime()) {
+    const minD = new Date(minTime);
+    minD.setHours(0, 0, 0, 0);
+    const diffDays = Math.floor((today.getTime() - minD.getTime()) / (1000 * 60 * 60 * 24));
+    
+    movie.slots = movie.slots.map(slot => {
+      const d = new Date(slot.time);
+      d.setDate(d.getDate() + diffDays);
+      
+      const pad = (n) => String(n).padStart(2, '0');
+      const yyyy = d.getFullYear();
+      const mm = pad(d.getMonth() + 1);
+      const dd = pad(d.getDate());
+      const hh = pad(d.getHours());
+      const mins = pad(d.getMinutes());
+      const ss = pad(d.getSeconds());
+      
+      return {
+        ...slot,
+        time: `${yyyy}-${mm}-${dd}T${hh}:${mins}:${ss}+05:30`
+      }
+    });
+  }
+});
+
 export default MOVIES;
