@@ -1,15 +1,17 @@
 import React from 'react';
 import { useState,useRef,useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {navbarStyles,navbarCSS} from "../assets/dummyStyles"
-import { Calendar,LogOut, Clapperboard, Film,X,Menu ,Home, Mail, Ticket,User } from 'lucide-react';
+import { Calendar,LogOut, Clapperboard, Film,X,Menu ,Home, Mail, Ticket,User, Search } from 'lucide-react';
 
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] =useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    const [userEmail,setUserEmail]=useState("");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [userEmail, setUserEmail] = useState("");
+    const navigate = useNavigate();
     const menuRef = useRef(null);
 
     useEffect(()=>{
@@ -91,6 +93,14 @@ const Navbar = () => {
         window.location.href = '/'; // Redirect to home page after logout
     };
 
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            navigate(`/movies?search=${encodeURIComponent(searchQuery.trim())}`);
+            setIsMenuOpen(false);
+        }
+    };
+
     const navItems=[
         {id:"home",label:"Home",icon:Home,path:"/"},
         {id:"movies",label:"Movies",icon:Film,path:"/movies"},
@@ -136,6 +146,18 @@ const Navbar = () => {
             </div>
 
             <div className={navbarStyles.rightSection}>
+                {/* Search Bar Desktop */}
+                <form onSubmit={handleSearchSubmit} className={navbarStyles.searchContainer}>
+                    <Search className={navbarStyles.searchIcon} />
+                    <input 
+                        type="text" 
+                        placeholder="Search movies..." 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className={navbarStyles.searchInput}
+                    />
+                </form>
+
                 <div className={navbarStyles.tabletNav}>
                     {navItems.map((item)=>{
                         const Icon = item.icon;
@@ -184,6 +206,18 @@ const Navbar = () => {
 
             {isMenuOpen && (
                 <div ref={menuRef} className={navbarStyles.mobileMenuPanel}>
+                    {/* Search Bar Mobile */}
+                    <form onSubmit={handleSearchSubmit} className={navbarStyles.mobileSearchContainer}>
+                        <Search className={navbarStyles.mobileSearchIcon} />
+                        <input 
+                            type="text" 
+                            placeholder="Search movies..." 
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className={navbarStyles.mobileSearchInput}
+                        />
+                    </form>
+
                     <div className={navbarStyles.mobileMenuItems}>
                         {navItems.map((item) => {
                         const Icon = item.icon;
@@ -216,7 +250,7 @@ const Navbar = () => {
             )}
         </div>
 
-        <style jsx>{navbarCSS}</style>
+        <style>{navbarCSS}</style>
     </nav>
   );
 };

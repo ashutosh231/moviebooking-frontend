@@ -2,16 +2,20 @@ import React from 'react';
 import { useState,useEffect } from 'react';
 import {moviesPageStyles} from "../assets/dummyStyles"
 import MOVIES from "../assets/dummymdata"
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 const MoviesPage = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const MOVIES_PER_PAGE = 12;
-  //const [showAll, setShowAll] = useState(false);
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get('search') || '';
+
   const movies = MOVIES;
-  const filteredMovies = activeCategory === 'all'
-    ? movies
-    : movies.filter(movie => movie.category === activeCategory);
+  const filteredMovies = movies.filter(movie => {
+    const matchesCategory = activeCategory === 'all' || movie.category === activeCategory;
+    const matchesSearch = searchQuery === '' || movie.title.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
   //const COLLAPSE_COUNT = 12;
 
   useEffect(() => {
@@ -48,6 +52,15 @@ const visibleMovies = filteredMovies.slice(startIndex, endIndex);
           </div>
         </div>
       </section>
+      
+      {searchQuery && (
+        <div className="flex justify-center mt-4 px-4">
+          <h2 className="text-xl md:text-2xl text-white font-semibold flex items-center gap-2">
+            Search Results for <span className="text-red-500 font-[pacifico]">"{searchQuery}"</span>
+          </h2>
+        </div>
+      )}
+
       <section className={moviesPageStyles.moviesSection}>
         <div className={moviesPageStyles.moviesContainer}>
           <div className={moviesPageStyles.moviesGrid}>
