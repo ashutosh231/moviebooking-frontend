@@ -13,7 +13,9 @@ import SeatSelector from './pages/SeatSelector'
 import SeatSelectorPageHome from './components/SeatSelectorPageHome'
 import OnboardingPage from './pages/OnboardingPage'
 import ProfilePage from './pages/ProfilePage'
+import AIChatPopup from './components/AIChatPopup'
 import { useEffect, useState } from 'react';
+
 import { useLocation, useNavigate } from 'react-router-dom';
 import apiClient from './config/api';
 
@@ -121,10 +123,12 @@ function App() {
         <Route path='/movie/:id/seat/:slot' element={<SeatSelectorPageHome />} />
         <Route path='/movie/:id/seat-selector/:slot' element={<SeatSelectorPageHome />} />
       </Routes>
+      <AIChatPopup />
       </div>
     </>
   )
 }
+
 
 
 export default App
