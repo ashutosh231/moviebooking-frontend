@@ -565,7 +565,7 @@ const MovieDetailPage = () => {
     </div>
   </div>
   </div>
-      <style jsx>{movieDetailCSS}</style>
+      <style>{movieDetailCSS}</style>
         </div>
     </div>
   );

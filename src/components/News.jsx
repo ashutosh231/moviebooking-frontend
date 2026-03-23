@@ -143,7 +143,7 @@ const News = () => {
             </section>
 
         </main>
-        <style jsx>{newsCSS}</style>
+        <style>{newsCSS}</style>
     </div>
   );
 };

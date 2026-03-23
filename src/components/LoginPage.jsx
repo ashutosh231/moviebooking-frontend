@@ -11,6 +11,9 @@ const ADMIN_PANEL_URL = import.meta.env.VITE_ADMIN_URL || 'http://localhost:5174
 
 const LoginPage = () => {
     const [mode, setMode] = useState('user'); // 'user' | 'admin'
+    const [step, setStep] = useState('login'); // 'login' | 'forgot-email' | 'forgot-otp'
+    const [otp, setOtp] = useState('');
+    const [newPassword, setNewPassword] = useState('');
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -35,8 +38,7 @@ const LoginPage = () => {
                 email: formData.email,
                 password: formData.password,
             });
-            const { token, user } = res.data;
-            localStorage.setItem('token', token);
+            const { user } = res.data;
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('userEmail', user?.email || formData.email);
             localStorage.setItem('cine_user_email', user?.email || formData.email);
@@ -68,16 +70,17 @@ const LoginPage = () => {
                 email: formData.email,
                 password: formData.password,
             });
-            const { token, user } = res.data;
+            const { user } = res.data;
 
-            // Store the token on the current origin too (in case admin panel shares domain)
-            localStorage.setItem('admin_token', token);
+            // We no longer store admin_token in localStorage.
+            // The credentials will be passed via HttpOnly cookies to the admin panel
+            // assuming it's on the same domain/subdomain with proper CORS.
             localStorage.setItem('cine_admin', JSON.stringify({ isAdmin: true, email: user?.email }));
 
             toast.success('Admin authenticated! Redirecting to Admin Panel...');
-            // Redirect to admin panel — passes token via URL param for auto-login
+            // Redirect to admin panel
             setTimeout(() => {
-                window.location.href = `${ADMIN_PANEL_URL}?token=${encodeURIComponent(token)}`;
+                window.location.href = `${ADMIN_PANEL_URL}`;
             }, 1200);
         } catch (err) {
             const msg =
@@ -87,6 +90,41 @@ const LoginPage = () => {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    /* ── Forgot Password Handlers ──────────────────────────── */
+    const handleSendResetOtp = async (e) => {
+        e.preventDefault();
+        if (!formData.email) { toast.error("Please enter your email."); return; }
+        setIsLoading(true);
+        try {
+            const res = await apiClient.post('/api/auth/forgot-password', { email: formData.email });
+            toast.success(res.data.message || "OTP sent!");
+            setStep('forgot-otp');
+        } catch (err) {
+            toast.error(err?.response?.data?.message || 'Failed to send OTP.');
+        } finally { setIsLoading(false); }
+    };
+
+    const handleResetPassword = async (e) => {
+        e.preventDefault();
+        if (!otp || otp.length < 6) { toast.error("Please enter the 6-digit OTP."); return; }
+        if (!newPassword || newPassword.length < 6) { toast.error("Password must be at least 6 characters."); return; }
+        setIsLoading(true);
+        try {
+            const res = await apiClient.post('/api/auth/reset-password', {
+                email: formData.email,
+                otp,
+                newPassword
+            });
+            toast.success(res.data.message || "Password reset successfully!");
+            setStep('login');
+            setOtp('');
+            setNewPassword('');
+            setFormData(prev => ({ ...prev, password: '' })); // clear old password just in case
+        } catch (err) {
+            toast.error(err?.response?.data?.message || 'Failed to reset password.');
+        } finally { setIsLoading(false); }
     };
 
     const isAdmin = mode === 'admin';
@@ -107,13 +145,14 @@ const LoginPage = () => {
             />
             <div className="relative w-full max-w-md z-10">
                 <div className={loginStyles.backButtonContainer}>
-                    <button onClick={goBack} className={loginStyles.backButton}>
+                    <button onClick={() => { if (step !== 'login') setStep('login'); else goBack(); }} className={loginStyles.backButton}>
                         <ArrowLeft className={loginStyles.backButtonIcon} size={20} />
-                        <span className={loginStyles.backButtonText}>Back to Home</span>
+                        <span className={loginStyles.backButtonText}>{step !== 'login' ? 'Back to Login' : 'Back to Home'}</span>
                     </button>
                 </div>
 
                 {/* Mode Toggle */}
+                {step === 'login' && (
                 <div className="flex mb-4 rounded-full overflow-hidden border border-red-700 w-full max-w-xs mx-auto">
                     <button
                         onClick={() => { setMode('user'); setFormData({ email: '', password: '' }); }}
@@ -132,6 +171,7 @@ const LoginPage = () => {
                         <Shield size={14} /> Admin Login
                     </button>
                 </div>
+                )}
 
                 <div className={loginStyles.cardContainer}>
                     {/* Red glow border for admin mode */}
@@ -148,22 +188,24 @@ const LoginPage = () => {
                                 <Film className={loginStyles.headerIcon} size={28} />
                             )}
                             <h2 className={loginStyles.headerTitle}>
-                                {isAdmin ? 'ADMIN ACCESS' : 'CINEMA ACCESS'}
+                                {step === 'forgot-email' ? 'RESET PASSWORD' : (step === 'forgot-otp' ? 'VERIFY OTP' : (isAdmin ? 'ADMIN ACCESS' : 'CINEMA ACCESS'))}
                             </h2>
                         </div>
                         <p className={loginStyles.headerSubtitle}>
-                            {isAdmin
-                                ? 'Admin credentials required to enter the control panel'
-                                : 'Enter your credentials to continue the experience'}
+                            {step === 'forgot-email' ? 'Enter your email to receive a reset code' :
+                             step === 'forgot-otp' ? `Enter the 6-digit code sent to ${formData.email}` :
+                            (isAdmin ? 'Admin credentials required to enter the control panel' : 'Enter your credentials to continue the experience')}
                         </p>
 
-                        {isAdmin && (
+                        {(isAdmin && step === 'login') && (
                             <div className="mb-4 flex items-center gap-2 bg-red-950/40 border border-red-700/40 rounded-xl px-4 py-2 text-red-300 text-xs">
                                 <Lock size={13} />
                                 <span>This login redirects to the <strong>Admin Panel</strong></span>
                             </div>
                         )}
 
+                        {/* --- LOGIN FORM --- */}
+                        {step === 'login' && (
                         <form onSubmit={isAdmin ? handleAdminSubmit : handleSubmit}>
                             <div className={loginStyles.inputGroup}>
                                 <label htmlFor="email" className={loginStyles.label}>EMAIL ADDRESS</label>
@@ -199,6 +241,14 @@ const LoginPage = () => {
                                 </div>
                             </div>
 
+                            {!isAdmin && (
+                                <div className="flex justify-end mb-4">
+                                    <button type="button" onClick={() => setStep('forgot-email')} className="text-xs text-red-500 hover:text-red-400 font-medium">
+                                        Forgot Password?
+                                    </button>
+                                </div>
+                            )}
+
                             <button
                                 type="submit"
                                 disabled={isLoading}
@@ -225,10 +275,100 @@ const LoginPage = () => {
                                 )}
                             </button>
                         </form>
+                        )}
+
+                        {/* --- FORGOT EMAIL FORM --- */}
+                        {step === 'forgot-email' && (
+                            <form onSubmit={handleSendResetOtp}>
+                                <div className={loginStyles.inputGroup}>
+                                    <label htmlFor="email" className={loginStyles.label}>EMAIL ADDRESS</label>
+                                    <div className={loginStyles.inputContainer}>
+                                        <input
+                                            type="email" id="email" name="email" autoFocus
+                                            value={formData.email} onChange={handleChange}
+                                            className={loginStyles.input}
+                                            placeholder="Enter registered email" required
+                                        />
+                                        <div className={loginStyles.inputIcon}>
+                                            <Clapperboard className="text-red-500" size={16} />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="submit" disabled={isLoading} className={`${loginStyles.submitButton} ${isLoading ? loginStyles.submitButtonDisabled : ''}`}>
+                                    {isLoading ? (
+                                        <div className={loginStyles.buttonContent}>
+                                            <div className={loginStyles.loadingSpinner}></div>
+                                            <span className={loginStyles.buttonText}>SENDING CODE...</span>
+                                        </div>
+                                    ) : (
+                                        <div className={loginStyles.buttonContent}>
+                                            <span className={loginStyles.buttonText}>SEND RESET CODE</span>
+                                        </div>
+                                    )}
+                                </button>
+                            </form>
+                        )}
+
+                        {/* --- VERIFY OTP & NEW PASSWORD FORM --- */}
+                        {step === 'forgot-otp' && (
+                            <form onSubmit={handleResetPassword}>
+                                <div className={loginStyles.inputGroup}>
+                                    <label htmlFor="otp" className={loginStyles.label}>6-DIGIT OTP</label>
+                                    <div className={loginStyles.inputContainer}>
+                                        <input
+                                            type="text" id="otp" name="otp" maxLength="6"
+                                            value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                                            className={loginStyles.input}
+                                            placeholder="XXXXXX" required autoFocus
+                                            style={{ letterSpacing: '8px', fontSize: '18px', fontWeight: 'bold' }}
+                                        />
+                                        <div className={loginStyles.inputIcon}>
+                                            <Lock className="text-red-500" size={16} />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className={loginStyles.inputGroup}>
+                                    <label htmlFor="newPassword" className={loginStyles.label}>NEW PASSWORD</label>
+                                    <div className={loginStyles.inputContainer}>
+                                        <input
+                                            type={showPassword ? "text" : "password"}
+                                            id="newPassword" name="newPassword"
+                                            value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
+                                            className={loginStyles.inputWithIcon}
+                                            placeholder="Min 6 characters" required
+                                        />
+                                        <button type="button" className={loginStyles.passwordToggle} onClick={() => setShowPassword(!showPassword)}>
+                                            {showPassword ? <EyeOff size={18} className={loginStyles.passwordToggleIcon} /> : <Eye size={18} className={loginStyles.passwordToggleIcon} />}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <button type="submit" disabled={isLoading || otp.length < 6} className={`${loginStyles.submitButton} ${(isLoading || otp.length < 6) ? loginStyles.submitButtonDisabled : ''}`}>
+                                    {isLoading ? (
+                                        <div className={loginStyles.buttonContent}>
+                                            <div className={loginStyles.loadingSpinner}></div>
+                                            <span className={loginStyles.buttonText}>RESETTING...</span>
+                                        </div>
+                                    ) : (
+                                        <div className={loginStyles.buttonContent}>
+                                            <span className={loginStyles.buttonText}>CONFIRM NEW PASSWORD</span>
+                                        </div>
+                                    )}
+                                </button>
+                                <div className="mt-4 text-center">
+                                    <button type="button" onClick={handleSendResetOtp} disabled={isLoading} className="text-xs text-gray-400 hover:text-white transition-colors">
+                                        Didn't receive a code? Resend
+                                    </button>
+                                </div>
+                            </form>
+                        )}
                     </div>
                 </div>
 
-                {!isAdmin && (
+
+                {(!isAdmin && step === 'login') && (
                     <div className={loginStyles.footerContainer}>
                         <p className={loginStyles.footerText}>
                             Don't have an account?{" "}

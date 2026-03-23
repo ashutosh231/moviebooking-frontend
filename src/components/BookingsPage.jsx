@@ -209,12 +209,6 @@ export default function BookingsPage() {
       setLoading(true);
       setError("");
       try {
-        const token = getStoredToken();
-        if (!token) {
-          navigate("/login");
-          return;
-        }
-
         let res;
         try {
           res = await apiClient.get('/api/bookings/my', { timeout: 15000 });
@@ -280,7 +274,10 @@ export default function BookingsPage() {
         console.error("Failed to load bookings:", err);
         const status = err?.response?.status;
         if (status === 401 || status === 403) {
-          localStorage.removeItem("token");
+          localStorage.removeItem('cine_auth');
+          localStorage.removeItem('isLoggedIn');
+          localStorage.removeItem('userEmail');
+          localStorage.removeItem('cine_user_email');
           navigate("/login");
           return;
         }

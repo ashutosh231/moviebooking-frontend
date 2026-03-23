@@ -11,8 +11,12 @@ import MovieDetailPage from './pages/MovieDetailPage'
 import MovieDetailPageHome from './pages/MovieDetailPageHome'
 import SeatSelector from './pages/SeatSelector'
 import SeatSelectorPageHome from './components/SeatSelectorPageHome'
-import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import OnboardingPage from './pages/OnboardingPage'
+import ProfilePage from './pages/ProfilePage'
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import apiClient from './config/api';
+
 
 /**
  * ScrollToTop component:
@@ -72,6 +76,27 @@ function App() {
     };
   }, []);
 
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Onboarding Check
+  useEffect(() => {
+    const checkOnboarding = async () => {
+      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+      if (isLoggedIn && !['/onboarding', '/login', '/signup'].includes(location.pathname)) {
+        try {
+          const res = await apiClient.get('/api/auth/profile');
+          if (res.data.user && res.data.user.onboardingCompleted === false) {
+            navigate('/onboarding');
+          }
+        } catch (err) {
+          console.error("Onboarding check failed:", err);
+        }
+      }
+    };
+    checkOnboarding();
+  }, [location.pathname, navigate]);
+
   return (
     <>
       <ScrollToTop />
@@ -81,6 +106,8 @@ function App() {
         <Route path='/' element={<Home />} />
         <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<SignUp />} />
+        <Route path='/onboarding' element={<OnboardingPage />} />
+        <Route path='/profile' element={<ProfilePage />} />
         <Route path='/movies' element={<Movie />} />
         <Route path='/releases' element={<Release />} />
         <Route path='/bookings' element={<Booking />} />
@@ -98,5 +125,6 @@ function App() {
     </>
   )
 }
+
 
 export default App

@@ -3,6 +3,7 @@ import { useState,useRef,useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {navbarStyles,navbarCSS} from "../assets/dummyStyles"
 import { Calendar,LogOut, Clapperboard, Film,X,Menu ,Home, Mail, Ticket,User, Search } from 'lucide-react';
+import apiClient from '../config/api';
 
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] =useState(false);
@@ -11,6 +12,8 @@ const Navbar = () => {
 
     const [searchQuery, setSearchQuery] = useState("");
     const [userEmail, setUserEmail] = useState("");
+    const [userAvatar, setUserAvatar] = useState("");
+    const [userName, setUserName] = useState("");
     const navigate = useNavigate();
     const menuRef = useRef(null);
 
@@ -28,6 +31,16 @@ const Navbar = () => {
     useEffect(()=>{
         const readAuthFromStorage = () => {
         const json=localStorage.getItem('cine_auth');
+        const userJson = localStorage.getItem('cine_user');
+        if (userJson) {
+            try {
+                const user = JSON.parse(userJson);
+                setUserAvatar(user?.avatar || "");
+                setUserName(user?.fullName || "");
+            } catch (e) {}
+        }
+
+
         if(json){
             try{
                 const parsed = JSON.parse(json);
@@ -38,6 +51,7 @@ const Navbar = () => {
                 console.error("Error parsing auth data:",e);
             }
         }
+
         const simpleFlag=localStorage.getItem('isLoggedIn');
         const email=localStorage.getItem('email') || localStorage.getItem('cine_user_email');
         if(simpleFlag == "true"){
@@ -83,7 +97,12 @@ const Navbar = () => {
         };
     }, [isMenuOpen]);// This effect listens for window resize events and the Escape key press. If the window is resized to be wider than 768 pixels while the menu is open, it automatically closes the menu. Additionally, if the Escape key is pressed, it also closes the menu. This ensures that the navigation menu behaves responsively and can be easily dismissed by the user.
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        try {
+            await apiClient.post('/api/auth/logout');
+        } catch (err) {
+            console.error('Logout error:', err);
+        }
         localStorage.removeItem('cine_auth');
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('userEmail');
@@ -177,10 +196,42 @@ const Navbar = () => {
                 <div className={navbarStyles.authSection}>
                     <div className={navbarStyles.desktopAuth}>
                         {isLoggedIn ? (
-                            <button title={userEmail || 'Logout'} onClick={handleLogout} className={navbarStyles.logoutButton}>
-                                <LogOut className={navbarStyles.authIcon} />
-                                <span>Logout</span>
-                            </button>
+                            <div className="relative" ref={menuRef}>
+                                <button 
+                                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                    className="flex items-center gap-2 bg-zinc-900/50 hover:bg-zinc-800 border border-zinc-800 rounded-full pl-1 pr-4 py-1 transition-all"
+                                >
+                                    <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white scale-90 overflow-hidden">
+                                        {userAvatar ? (
+                                            <img src={userAvatar} alt="Avatar" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <User size={18} />
+                                        )}
+                                    </div>
+                                    <span className="text-sm font-medium text-gray-200">{userName ? userName.split(' ')[0] : userEmail.split('@')[0]}</span>
+                                </button>
+
+
+
+                                
+                                {isMenuOpen && (
+                                    <div className="absolute right-0 mt-3 w-48 bg-black border border-zinc-800 rounded-2xl shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                                        <NavLink to="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-zinc-900 rounded-xl transition-all">
+                                            <User size={16} className="text-red-500" />
+                                            <span>My Profile</span>
+                                        </NavLink>
+                                        <NavLink to="/bookings" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-zinc-900 rounded-xl transition-all">
+                                            <Ticket size={16} className="text-red-500" />
+                                            <span>My Bookings</span>
+                                        </NavLink>
+                                        <div className="h-px bg-zinc-800 my-1 mx-2"></div>
+                                        <button onClick={() => { setIsMenuOpen(false); handleLogout(); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-400 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all">
+                                            <LogOut size={16} />
+                                            <span>Logout</span>
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         ) : (
                             <a href="/login" className={navbarStyles.loginButton}>
                                 <User className={navbarStyles.authIcon} />
@@ -201,6 +252,7 @@ const Navbar = () => {
                     </div>
 
                 </div>
+
 
             </div>
 
@@ -233,10 +285,27 @@ const Navbar = () => {
 
                         <div className={navbarStyles.mobileAuthSection}>
                             {isLoggedIn ? (
-                                <button title={userEmail || 'Logout'} onClick={()=>{setIsMenuOpen(false); handleLogout();}} className={navbarStyles.mobileLogoutButton}>
-                                    <LogOut className={navbarStyles.mobileAuthIcon} />
-                                    <span>Logout</span>
-                                </button>
+                                <>
+                                    <NavLink to="/profile" onClick={() => setIsMenuOpen(false)} className={({ isActive }) =>
+                                        `${navbarStyles.mobileNavLink.base} ${isActive ? navbarStyles.mobileNavLink.active : navbarStyles.mobileNavLink.inactive}`
+                                    }>
+                                        <div className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center text-white overflow-hidden mr-1">
+                                            {userAvatar ? (
+                                                <img src={userAvatar} alt="Avatar" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <User size={14} />
+                                            )}
+                                        </div>
+                                        <span className={navbarStyles.mobileNavText}>{userName ? userName.split(' ')[0] : "My Profile"}</span>
+                                    </NavLink>
+
+
+
+                                    <button title={userEmail || 'Logout'} onClick={()=>{setIsMenuOpen(false); handleLogout();}} className={navbarStyles.mobileLogoutButton}>
+                                        <LogOut className={navbarStyles.mobileAuthIcon} />
+                                        <span>Logout</span>
+                                    </button>
+                                </>
                             ) : (
                                 <a href="/login" onClick={() => setIsMenuOpen(false)} className={navbarStyles.mobileLoginButton}>
                                     <User className={navbarStyles.mobileAuthIcon} />
@@ -244,6 +313,7 @@ const Navbar = () => {
                                 </a>
                             )}
                         </div>
+
 
                     </div>
                 </div>

@@ -277,8 +277,7 @@ export default function SignUpPage() {
     setLoading(true);
     try {
       const res = await apiClient.post('/api/auth/verify-otp', { ...form, otp: code });
-      const { token, user } = res.data;
-      localStorage.setItem('token', token);
+      const { user } = res.data;
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('isLoggedIn', 'true');
       toast.success('🎉 Welcome to CineVerse!');
