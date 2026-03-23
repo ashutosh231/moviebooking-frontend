@@ -164,7 +164,9 @@ const PrintableTicket = forwardRef(({ ticket }, ref) => {
     slotTime,
     auditorium,
     seats,
-    amount
+    amount,
+    cinemaName,
+    cinemaAddress
   } = ticket;
 
   const qrPayload = JSON.stringify({
@@ -216,8 +218,9 @@ const PrintableTicket = forwardRef(({ ticket }, ref) => {
           <div style={styles.badgeList}>
             {category && <span style={styles.badge}>{category}</span>}
             {durationStr && <span style={styles.badge}>⏳ {durationStr}</span>}
-            <span style={styles.badge}>{auditorium}</span>
+            <span style={styles.badge}>{cinemaName || 'CineVerse'} &bull; {auditorium}</span>
           </div>
+          {cinemaAddress && <div style={{ fontSize: '11px', color: '#999', marginTop: '8px', letterSpacing: '0.5px' }}>📍 {cinemaAddress}</div>}
         </div>
 
         <div style={styles.infoGrid}>

@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { seatSelectorStyles } from '../assets/dummyStyles';
-import movies from '../assets/dummymdata';
 import { ArrowLeft, CreditCard, Ticket, Sofa, RockingChair } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import apiClient, { API_BASE } from '../config/api';
 import { io } from 'socket.io-client';
+import axios from 'axios';
 
 const ROWS = [
   { id: "A", type: "standard", count: 8 },
@@ -30,11 +30,57 @@ function loadRazorpayScript() {
 
 const SeatSelectorPage = () => {
   const { id, slot } = useParams();
-  const movieId = Number(id);
   const slotKey = slot ? decodeURIComponent(slot) : "";
   const navigate = useNavigate();
+  const searchParams = new URLSearchParams(window.location.search);
+  const cinemaId = searchParams.get('cinemaId');
 
-  const movie = useMemo(() => movies.find((m) => m.id === movieId), [movieId]);
+  const [cinemaName, setCinemaName] = useState(null);
+  const [movie, setMovie] = useState(null);
+  const [movieLoading, setMovieLoading] = useState(true);
+
+  useEffect(() => {
+    if (cinemaId) {
+      apiClient.get(`/api/cinemas/${cinemaId}`).then(res => setCinemaName(res.data.data?.name)).catch(() => {});
+    }
+  }, [cinemaId]);
+
+  // Fetch movie from API
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchMovie() {
+      try {
+        const res = await axios.get(`${API_BASE}/api/movies/${id}`);
+        const data = res.data;
+        const m = data.data || data.item || data;
+        const resolveImg = (val) => {
+          if (!val) return '';
+          if (val.startsWith('http')) return val;
+          return `${API_BASE}/uploads/${val}`;
+        };
+        const mapped = {
+          id: m._id || m.id,
+          title: m.movieName || m.title || 'Untitled',
+          image: m.thumbnail || resolveImg(m.poster) || '',
+          price: m.seatPrices?.standard || 250,
+          seatPrices: m.seatPrices || { standard: 250, recliner: 400 },
+          slots: (m.slots || []).map(s => ({
+            time: s.date && s.time ? `${s.date}T${s.time}:00+05:30` : '',
+            audi: m.auditorium || 'Audi 1',
+          })),
+          auditorium: m.auditorium || 'Audi 1',
+        };
+        if (!cancelled) setMovie(mapped);
+      } catch (err) {
+        console.error('Failed to fetch movie for seat selector:', err);
+      } finally {
+        if (!cancelled) setMovieLoading(false);
+      }
+    }
+    fetchMovie();
+    return () => { cancelled = true; };
+  }, [id]);
+
   const basePrice = movie?.price ?? 0;
 
   const audiForSlot = useMemo(() => {
@@ -52,7 +98,7 @@ const SeatSelectorPage = () => {
   }, [movie, slotKey]);
 
   const audiName = audiForSlot || "Audi 1";
-  const storageKey = `bookings_${movieId}_${slotKey}`;
+  const storageKey = `bookings_${id}_${slotKey}`;
   const [booked, setBooked] = useState(new Set());
   const [selected, setSelected] = useState(new Set());
   const [isBuying, setIsBuying] = useState(false);
@@ -72,11 +118,12 @@ const SeatSelectorPage = () => {
   }, [slotKey, movie, navigate]);
 
   useEffect(() => {
+    if (movieLoading) return; // still fetching
     if (!movie) {
       toast.error("Movie not found.");
       setTimeout(() => navigate("/movies"), 600);
     }
-  }, [movie, navigate]);
+  }, [movie, movieLoading, navigate]);
 
   /* ─── Load occupied seats ────────────────────────────────────── */
   useEffect(() => {
@@ -236,6 +283,7 @@ const SeatSelectorPage = () => {
       // ── Step 2: Create booking in MongoDB ─────────────────────────
       const userEmail = localStorage.getItem('userEmail') || localStorage.getItem('cine_user_email') || '';
       const res = await apiClient.post('/api/bookings', {
+        cinemaId,
         movieId: movie?._id || '',
         movieName: movie?.title || '',
         showtime: slotKey,
@@ -346,7 +394,7 @@ const SeatSelectorPage = () => {
           <div className={seatSelectorStyles.titleContainer}>
             <h1 className={seatSelectorStyles.movieTitle}>{movie?.title}</h1>
             <div className={seatSelectorStyles.showtimeText}>
-              {slotKey ? new Date(slotKey).toLocaleString("en-IN", { weekday: "short", year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "Showtime unavailable"}
+              {cinemaName || "CineVerse"} &bull; {slotKey ? new Date(slotKey).toLocaleString("en-IN", { weekday: "short", year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "Showtime unavailable"}
             </div>
           </div>
           <div style={{ marginLeft: "auto", display: "flex", alignItems: "center" }}>

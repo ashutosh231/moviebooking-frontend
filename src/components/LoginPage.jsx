@@ -5,9 +5,9 @@ import { toast, ToastContainer } from 'react-toastify';
 import { ArrowLeft, Clapperboard, EyeOff, Film, Popcorn, Eye, Shield, Lock } from 'lucide-react';
 import apiClient from '../config/api';
 
-// Replace this with your real Netlify admin panel URL once deployed.
+// Replace this with your real custom admin panel URL once deployed.
 // For local development it points to the admin Vite dev server.
-const ADMIN_PANEL_URL = import.meta.env.VITE_ADMIN_URL || 'http://localhost:5174';
+const ADMIN_PANEL_URL = import.meta.env.VITE_ADMIN_URL || 'http://localhost:5173';
 
 const LoginPage = () => {
     const [mode, setMode] = useState('user'); // 'user' | 'admin'

@@ -2,8 +2,9 @@ import React from 'react';
 import { useState,useRef,useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {navbarStyles,navbarCSS} from "../assets/dummyStyles"
-import { Calendar,LogOut, Clapperboard, Film,X,Menu ,Home, Mail, Ticket,User, Search } from 'lucide-react';
+import { Calendar,LogOut, Clapperboard, Film,X,Menu ,Home, Mail, Ticket,User, Search, MapPin, ChevronDown } from 'lucide-react';
 import apiClient from '../config/api';
+import LocationModal from './LocationModal';
 
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] =useState(false);
@@ -14,6 +15,11 @@ const Navbar = () => {
     const [userEmail, setUserEmail] = useState("");
     const [userAvatar, setUserAvatar] = useState("");
     const [userName, setUserName] = useState("");
+    
+    // Location state
+    const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+    const [selectedLocation, setSelectedLocation] = useState(null);
+    
     const navigate = useNavigate();
     const menuRef = useRef(null);
 
@@ -77,6 +83,19 @@ const Navbar = () => {
     return () => window.removeEventListener('storage', onStorage);
     },[]);// This effect reads the authentication state from localStorage when the component mounts and sets up an event listener for storage events. If any of the relevant keys in localStorage change (like 'cine_auth', 'isLoggedIn', 'userEmail', or 'cine_user_email'), it re-reads the authentication state to keep the UI in sync with the stored data.
 
+    // Read Location from storage
+    useEffect(() => {
+        const loadLoc = () => {
+            const locJson = localStorage.getItem('cine_location');
+            if (locJson) {
+                try { setSelectedLocation(JSON.parse(locJson)); } catch (e) {}
+            }
+        };
+        loadLoc();
+        window.addEventListener('storage', loadLoc);
+        return () => window.removeEventListener('storage', loadLoc);
+    }, []);
+
 
 
     useEffect(() => {
@@ -137,6 +156,18 @@ const Navbar = () => {
                     <Clapperboard className={navbarStyles.logoIcon} />
                 </div>
                 <div className={navbarStyles.logoText}>CineVerse</div>
+                
+                {/* Location Chip Desktop */}
+                <button 
+                    onClick={() => setIsLocationModalOpen(true)}
+                    className="hidden md:flex items-center gap-1.5 ml-6 px-3 py-1.5 bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/50 rounded-lg transition-colors group"
+                >
+                    <MapPin size={16} className="text-[#e50914]" />
+                    <span className="text-sm font-medium text-gray-200 group-hover:text-white truncate max-w-[120px]">
+                        {selectedLocation?.city || "Select Location"}
+                    </span>
+                    <ChevronDown size={14} className="text-gray-400 group-hover:text-white" />
+                </button>
             </div>
             <div className={`${navbarStyles.desktopNav}`}>
                     <div className={navbarStyles.desktopNavItems}>
@@ -199,16 +230,16 @@ const Navbar = () => {
                             <div className="relative" ref={menuRef}>
                                 <button 
                                     onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                    className="flex items-center gap-2 bg-zinc-900/50 hover:bg-zinc-800 border border-zinc-800 rounded-full pl-1 pr-4 py-1 transition-all"
+                                    className="flex items-center gap-2 bg-zinc-900/50 hover:bg-zinc-800 border border-zinc-800 rounded-full pl-1 pr-3 py-1 transition-all"
                                 >
-                                    <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white scale-90 overflow-hidden">
+                                    <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white scale-90 overflow-hidden flex-shrink-0">
                                         {userAvatar ? (
                                             <img src={userAvatar} alt="Avatar" className="w-full h-full object-cover" />
                                         ) : (
                                             <User size={18} />
                                         )}
                                     </div>
-                                    <span className="text-sm font-medium text-gray-200">{userName ? userName.split(' ')[0] : userEmail.split('@')[0]}</span>
+                                    <span className="text-sm font-medium text-gray-200 truncate max-w-[80px]">{userName ? userName.split(' ')[0] : userEmail.split('@')[0]}</span>
                                 </button>
 
 
@@ -250,10 +281,21 @@ const Navbar = () => {
                             )}
                         </button>
                     </div>
-
                 </div>
+            </div>
 
-
+            {/* Location Chip Mobile - sits below logo in mobile */}
+            <div className="md:hidden w-full px-4 pb-3 flex justify-start">
+                <button 
+                    onClick={() => setIsLocationModalOpen(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-700/50 rounded-lg transition-colors group"
+                >
+                    <MapPin size={14} className="text-[#e50914]" />
+                    <span className="text-xs font-medium text-gray-200">
+                        {selectedLocation?.city || "Select Location"}
+                    </span>
+                    <ChevronDown size={12} className="text-gray-400" />
+                </button>
             </div>
 
             {isMenuOpen && (
@@ -319,7 +361,12 @@ const Navbar = () => {
                 </div>
             )}
         </div>
-
+            
+            <LocationModal 
+                isOpen={isLocationModalOpen} 
+                onClose={() => setIsLocationModalOpen(false)} 
+                onLocationSelect={(loc) => setSelectedLocation(loc)} 
+            />
         <style>{navbarCSS}</style>
     </nav>
   );

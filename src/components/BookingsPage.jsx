@@ -265,7 +265,10 @@ export default function BookingsPage() {
             amount = b.total;
           }
 
-          return { id, title, poster, category, durationMins, slotTime, auditorium, seats, amount, amountPaise: b.amountPaise, raw: b };
+          const cinemaName = b.cinema?.name || "CineVerse Cinema";
+          const cinemaAddress = b.cinema?.address || "Mumbai, India";
+
+          return { id, title, poster, category, durationMins, slotTime, auditorium, seats, amount, amountPaise: b.amountPaise, raw: b, cinemaName, cinemaAddress };
         });
 
 
@@ -400,7 +403,10 @@ export default function BookingsPage() {
 
                         <div className={bookingsPageStyles.locationContainer}>
                           <MapPin className={bookingsPageStyles.locationIcon} />
-                          <div className={bookingsPageStyles.locationText}>{b.auditorium}</div>
+                          <div className={bookingsPageStyles.locationText}>
+                            <div>{b.cinemaName} &bull; {b.auditorium}</div>
+                            <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '2px', lineHeight: '1.2' }}>{b.cinemaAddress}</div>
+                          </div>
                         </div>
                       </div>
 

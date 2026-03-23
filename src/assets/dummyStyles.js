@@ -47,13 +47,13 @@ export const bannerStyles = {
 export const navbarStyles = {
   // Main nav container
   nav: {
-    base: "fixed left-4 right-4 top-6 z-50 transition-all duration-300",
+    base: "fixed left-4 right-4 top-6 z-50 transition-all duration-300 overflow-visible",
     scrolled: "py-3 bg-black/85 backdrop-blur-sm shadow-xl rounded-3xl",
     notScrolled: "py-4 bg-black backdrop-blur-sm rounded-full"
   },
 
   // Layout
-  container: "max-w-7xl mx-auto px-4 md:px-1 lg:px-1 xl:px-8 flex items-center justify-between",
+  container: "max-w-7xl mx-auto px-4 md:px-4 lg:px-6 xl:px-8 flex items-center justify-between gap-3",
 
   // Logo section
   logoContainer: "flex items-center gap-3 z-20 flex-shrink-0",
@@ -62,22 +62,22 @@ export const navbarStyles = {
   logoText: "text-lg md:text-sm xl:text-lg lg:tex-lg font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-red-400 to-red-200 font-[pacifico]",
 
   // Desktop navigation
-  desktopNav: "hidden lg:flex flex-1 justify-center z-10 items-center bg-black/70 backdrop-blur-md rounded-full px-3 py-2 gap-2 shadow-inner mx-4",
-  desktopNavItems: "flex gap-2 items-center",
+  desktopNav: "hidden lg:flex flex-1 min-w-0 justify-center z-10 items-center bg-black/70 backdrop-blur-md rounded-full px-2 py-2 gap-1 shadow-inner mx-4",
+  desktopNavItems: "flex gap-1.5 items-center",
   desktopNavItem: "relative group",
   desktopNavLink: {
-    base: "nav-pill-btn flex items-center gap-3 px-5 py-3 rounded-full text-sm font-medium transition-all",
+    base: "nav-pill-btn relative flex items-center gap-1.5 px-2.5 py-2 lg:px-3 lg:py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap",
     active: "active text-white",
     inactive: "text-gray-300"
   },
-  desktopNavIcon: "h-5 w-5",
+  desktopNavIcon: "h-4 w-4",
 
   // Right section
-  rightSection: "flex items-center gap-4 z-20",
+  rightSection: "flex items-center gap-3 z-20 flex-shrink-0",
 
   // Search section
   searchContainer: "hidden md:flex items-center relative mr-2 group",
-  searchInput: "bg-black/50 border border-gray-700/50 focus:border-red-500 text-gray-200 text-sm rounded-full pl-10 pr-4 py-2 w-48 lg:w-64 transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-red-500/50 placeholder-gray-500",
+  searchInput: "bg-black/50 border border-gray-700/50 focus:border-red-500 text-gray-200 text-sm rounded-full pl-10 pr-4 py-2 w-40 lg:w-52 xl:w-64 transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-red-500/50 placeholder-gray-500",
   searchIcon: "absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-red-400 transition-colors",
 
   mobileSearchContainer: "w-full mt-2 relative group",
@@ -143,19 +143,21 @@ export const navbarCSS = `
   }
 
   .pill-underline {
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
     height: 2px;
-    width: 40%;
+    width: 60%;
     border-radius: 999px;
-    margin-top: 4px;
     background: linear-gradient(90deg, #ff6b6b, #ff3b3b);
-    transform: scaleX(0);
-    transform-origin: left center;
+    transform-origin: center;
     transition: transform 0.28s ease;
   }
 
   .nav-pill-btn:hover .pill-underline,
   .nav-pill-btn.active .pill-underline {
-    transform: scaleX(1);
+    transform: translateX(-50%) scaleX(1);
   }
 
   @media (max-width: 767px) {

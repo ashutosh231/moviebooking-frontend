@@ -13,6 +13,7 @@ import SeatSelector from './pages/SeatSelector'
 import SeatSelectorPageHome from './components/SeatSelectorPageHome'
 import OnboardingPage from './pages/OnboardingPage'
 import ProfilePage from './pages/ProfilePage'
+import CinemaSelectionPage from './pages/CinemaSelectionPage'
 import AIChatPopup from './components/AIChatPopup'
 import { useEffect, useState } from 'react';
 
@@ -116,6 +117,8 @@ function App() {
         <Route path='/contact' element={<Contact />} />
         <Route path='/movies/:id' element={<MovieDetailPage />} />
         <Route path='/movie/:id' element={<MovieDetailPageHome />} />
+        <Route path='/movies/:id/cinemas/:slot' element={<CinemaSelectionPage />} />
+        <Route path='/movie/:id/cinemas/:slot' element={<CinemaSelectionPage />} />
         <Route path='/movies/:id/seat/:slot' element={<SeatSelector />} />
         <Route path='/movies/:id/seat-selector/:slot' element={<SeatSelector />} />
 

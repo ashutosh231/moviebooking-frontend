@@ -1,10 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { movieDetailStyles,movieDetailCSS } from '../assets/dummyStyles';
-import movies from '../assets/dummymdata';
-import { useParams, useNavigate,Link } from 'react-router-dom';
-import { useMemo, useState } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
-import { ArrowLeft, X,Star, Calendar,User ,Play} from 'lucide-react';
+import { ArrowLeft, X, Star, Calendar, User, Play } from 'lucide-react';
+import axios from 'axios';
+import Navbar from '../components/Navbar';
+
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:4000';
 const ROWS = [
   { id: "A", type: "standard", count: 8 },
   { id: "B", type: "standard", count: 8 },
@@ -81,9 +83,10 @@ const formatTimeInTZ = (dateLike, timeZone = "Asia/Kolkata") => {
 };
 const MovieDetailPage = () => {
     const { id } = useParams();
-    const movieId = Number(id);
-    const movie = useMemo(() => movies.find((m) => m.id === movieId), [movieId]);
     const navigate = useNavigate();
+
+    const [movie, setMovie] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     // Trailer-related state
     const [showTrailer, setShowTrailer] = useState(false);
@@ -93,11 +96,55 @@ const MovieDetailPage = () => {
     const [selectedDay, setSelectedDay] = useState(0);
     const [selectedTime, setSelectedTime] = useState(null);
 
-    useEffect(() => {// Redirect to home if movie not found
-        if (!movie) {
-            toast.error('Movie not found.');
+    // Fetch movie from API
+    useEffect(() => {
+        let cancelled = false;
+        async function fetchMovie() {
+            setLoading(true);
+            try {
+                const res = await axios.get(`${API_BASE}/api/movies/${id}`);
+                const data = res.data;
+                const m = data.data || data.item || data;
+
+                const resolveImg = (val) => {
+                    if (!val) return '';
+                    if (val.startsWith('http')) return val;
+                    return `${API_BASE}/uploads/${val}`;
+                };
+
+                const mapped = {
+                    id: m._id || m.id,
+                    title: m.movieName || m.title || 'Untitled',
+                    image: m.thumbnail || resolveImg(m.poster) || '',
+                    category: (m.categories && m.categories[0]) ? m.categories[0].toLowerCase() : 'action',
+                    duration: m.duration ? `${Math.floor(m.duration / 60)}h ${m.duration % 60}m` : '',
+                    rating: m.rating || 0,
+                    genre: (m.categories || []).join(' / '),
+                    price: m.seatPrices?.standard || 250,
+                    synopsis: m.story || m.description || '',
+                    director: (m.directors || []).map(d => ({ name: d.name || '', img: d.preview || resolveImg(d.file) || '' })),
+                    producer: (m.producers || [])[0] ? { name: m.producers[0].name || '', img: m.producers[0].preview || resolveImg(m.producers[0].file) || '' } : { name: '', img: '' },
+                    cast: (m.cast || []).map(c => ({ name: c.name || '', role: c.role || '', img: c.preview || resolveImg(c.file) || '' })),
+                    slots: (m.slots || []).map(s => ({
+                        time: s.date && s.time ? `${s.date}T${s.time}:00+05:30` : '',
+                        audi: m.auditorium || 'Audi 1',
+                    })),
+                    trailer: m.trailerUrl || '',
+                    seatPrices: m.seatPrices || { standard: 250, recliner: 400 },
+                    auditorium: m.auditorium || 'Audi 1',
+                };
+
+                if (!cancelled) setMovie(mapped);
+            } catch (err) {
+                console.error('Failed to fetch movie:', err);
+                if (!cancelled) toast.error('Movie not found.');
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
         }
-    }, [movie]);
+        fetchMovie();
+        return () => { cancelled = true; };
+    }, [id]);
 
     /**
    * Build showtimeDays by grouping ONLY the dates present in movie.slots.
@@ -235,6 +282,15 @@ const MovieDetailPage = () => {
     setSelectedTrailerId(null);
     setSelectedMovie(null);
   };
+  if(loading){
+    return (
+      <div className={movieDetailStyles.notFoundContainer}>
+        <div className={movieDetailStyles.notFoundContent}>
+            <h2 className={movieDetailStyles.notFoundTitle}>Loading...</h2>
+        </div>
+      </div>
+    );
+  }
   if(!movie){
     return (
       <div className={movieDetailStyles.notFoundContainer}>
@@ -249,13 +305,13 @@ const MovieDetailPage = () => {
   const handleTimeSelect = (datetime) => {
     setSelectedTime(datetime);
     const key=encodeURIComponent(datetime);
-    navigate(`/movies/${movie.id}/seat-selector/${key}`);
+    navigate(`/movies/${movie.id}/cinemas/${key}`);
   };
 
   const handleBookNow = () => {
     if (selectedTime) {
       const key = encodeURIComponent(selectedTime);
-      navigate(`/movies/${movie.id}/seat-selector/${key}`);
+      navigate(`/movies/${movie.id}/cinemas/${key}`);
     } else {
       toast.error("Please select a showtime first");
     }
@@ -276,6 +332,8 @@ const MovieDetailPage = () => {
 
 
   return (
+    <>
+    <Navbar />
     <div className={movieDetailStyles.container}>
         {showTrailer && (
             <div className={movieDetailStyles.modalOverlay}>
@@ -568,6 +626,7 @@ const MovieDetailPage = () => {
       <style>{movieDetailCSS}</style>
         </div>
     </div>
+    </>
   );
 };
 
