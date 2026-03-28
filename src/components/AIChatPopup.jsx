@@ -101,23 +101,29 @@ const AIChatPopup = () => {
     };
 
     return (
-        <div className="fixed bottom-6 right-6 z-[9999] font-sans">
-            {/* Floating Trigger Button */}
+        <>
+            {/* Floating Trigger Button (raised to avoid overlap with scroll-to-top) */}
             {!isOpen && (
-                <button 
-                    onClick={() => setIsOpen(true)}
-                    className="relative w-14 h-14 bg-gradient-to-tr from-red-600 to-red-500 rounded-full flex items-center justify-center text-white shadow-[0_0_20px_rgba(220,38,38,0.3)] transition-all duration-300 hover:scale-110 hover:shadow-[0_0_30px_rgba(220,38,38,0.5)] active:scale-95 group"
-                >
-                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center animate-bounce shadow-md">
-                        <Sparkles size={10} className="text-red-600" />
+                <div className="fixed bottom-24 right-6 z-[9999] font-sans flex items-center gap-2">
+                    <div className="hidden sm:flex items-center rounded-full border border-zinc-700/70 bg-zinc-900/85 backdrop-blur-md px-3 py-1.5 shadow-lg">
+                        <span className="text-xs font-semibold tracking-wide text-zinc-100">Get Help</span>
                     </div>
-                    <MessageSquare size={24} className="group-hover:rotate-12 transition-transform" />
-                </button>
+                    <button
+                        onClick={() => setIsOpen(true)}
+                        aria-label="Open AI help"
+                        className="relative w-14 h-14 bg-gradient-to-tr from-red-600 to-red-500 rounded-full flex items-center justify-center text-white shadow-[0_0_20px_rgba(220,38,38,0.3)] transition-all duration-300 hover:scale-110 hover:shadow-[0_0_30px_rgba(220,38,38,0.5)] active:scale-95 group"
+                    >
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center animate-bounce shadow-md">
+                            <Sparkles size={10} className="text-red-600" />
+                        </div>
+                        <MessageSquare size={24} className="group-hover:rotate-12 transition-transform" />
+                    </button>
+                </div>
             )}
 
             {/* Chat Window */}
             {isOpen && (
-                <div className="w-[350px] sm:w-[420px] h-[550px] bg-zinc-950/95 backdrop-blur-xl border border-zinc-800/50 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden animate-in slide-in-from-bottom-10 fade-in duration-500 ease-out">
+                <div className="fixed bottom-6 right-6 z-[9999] w-[350px] sm:w-[420px] h-[550px] bg-zinc-950/95 backdrop-blur-xl border border-zinc-800/50 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden animate-in slide-in-from-bottom-10 fade-in duration-500 ease-out">
                     
                     {/* Header */}
                     <div className="bg-zinc-900/50 backdrop-blur-md px-6 py-5 flex items-center justify-between border-b border-zinc-800/50">
@@ -215,7 +221,7 @@ const AIChatPopup = () => {
                     </div>
                 </div>
             )}
-        </div>
+        </>
     );
 };
 

@@ -381,9 +381,11 @@ export default function SignUpPage() {
         {step === 'form' && (
           <div className="sv-card">
             {/* Logo */}
-            <div className="sv-logo">
-              <div className="sv-logo-icon"><Clapperboard size={20} color="#fff"/></div>
-              <span className="sv-logo-text">CineVerse</span>
+            <div className="flex items-center justify-center gap-2 mb-2 group">
+                <div className="p-1.5 bg-gradient-to-br from-red-600 to-red-800 rounded-lg shadow-sm shadow-red-900/20">
+                    <Clapperboard className="h-5 w-5 text-white" />
+                </div>
+                <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-red-400 font-[pacifico] tracking-wider">CineVerse</span>
             </div>
             <p className="sv-subtitle">Create your account</p>
 

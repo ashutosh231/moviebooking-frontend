@@ -15,6 +15,7 @@ import OnboardingPage from './pages/OnboardingPage'
 import ProfilePage from './pages/ProfilePage'
 import CinemaSelectionPage from './pages/CinemaSelectionPage'
 import AIChatPopup from './components/AIChatPopup'
+import ProtectedRoute from './components/ProtectedRoute'
 import { useEffect, useState } from 'react';
 
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -110,10 +111,10 @@ function App() {
         <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<SignUp />} />
         <Route path='/onboarding' element={<OnboardingPage />} />
-        <Route path='/profile' element={<ProfilePage />} />
+        <Route path='/profile' element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         <Route path='/movies' element={<Movie />} />
         <Route path='/releases' element={<Release />} />
-        <Route path='/bookings' element={<Booking />} />
+        <Route path='/bookings' element={<ProtectedRoute><Booking /></ProtectedRoute>} />
         <Route path='/contact' element={<Contact />} />
         <Route path='/movies/:id' element={<MovieDetailPage />} />
         <Route path='/movie/:id' element={<MovieDetailPageHome />} />

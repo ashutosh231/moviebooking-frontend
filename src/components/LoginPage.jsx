@@ -7,7 +7,7 @@ import apiClient from '../config/api';
 
 // Replace this with your real custom admin panel URL once deployed.
 // For local development it points to the admin Vite dev server.
-const ADMIN_PANEL_URL = import.meta.env.VITE_ADMIN_URL || 'http://localhost:5173';
+const ADMIN_PANEL_URL = import.meta.env.VITE_ADMIN_URL || 'http://localhost:5174';
 
 const LoginPage = () => {
     const [mode, setMode] = useState('user'); // 'user' | 'admin'
@@ -70,7 +70,7 @@ const LoginPage = () => {
                 email: formData.email,
                 password: formData.password,
             });
-            const { user } = res.data;
+            const { user, token } = res.data;
 
             // We no longer store admin_token in localStorage.
             // The credentials will be passed via HttpOnly cookies to the admin panel
@@ -80,6 +80,11 @@ const LoginPage = () => {
             toast.success('Admin authenticated! Redirecting to Admin Panel...');
             // Redirect to admin panel
             setTimeout(() => {
+                if (token) {
+                    const sep = ADMIN_PANEL_URL.includes('?') ? '&' : '?';
+                    window.location.href = `${ADMIN_PANEL_URL}${sep}token=${encodeURIComponent(token)}`;
+                    return;
+                }
                 window.location.href = `${ADMIN_PANEL_URL}`;
             }, 1200);
         } catch (err) {

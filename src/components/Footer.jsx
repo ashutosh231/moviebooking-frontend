@@ -75,16 +75,11 @@ const Footer = () => {
       <div className={footerStyles.mainContainer}>
         <div className={footerStyles.gridContainer}>
             <div className={footerStyles.brandContainer}>
-                <div className={footerStyles.brandLogoContainer}>
-                    <div className='relative'>
-                        <div className={footerStyles.logoGlow}></div>
-                        <div className={footerStyles.logoContainer}>
-                            <Clapperboard className={footerStyles.logoIcon}/>
-                        </div>
+                <div className="flex items-center gap-2 mb-6 group cursor-pointer" onClick={scrollToTop}>
+                    <div className="p-2 bg-gradient-to-br from-red-600 to-red-800 rounded-xl shadow-md shadow-red-900/20 group-hover:scale-105 transition-transform duration-300">
+                        <Clapperboard className="h-6 w-6 text-white" />
                     </div>
-                    <h2 className={footerStyles.brandTitle} style={{fontFamily: 'Monoton, cursive'}}>Cine
-                        <span className={footerStyles.brandTitleWhite}>Verse</span>
-                    </h2>
+                    <span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 font-[pacifico] tracking-wider">CineVerse</span>
                 </div>
                 <p className={footerStyles.brandDescription}>
                     Experiance the dark side of cinema with the latest news, reviews,

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { X, MapPin, Search, Crosshair } from 'lucide-react';
+import { X, MapPin, Search, Crosshair, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -18,6 +19,7 @@ let DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon;
 
 const LocationModal = ({ isOpen, onClose, onLocationSelect }) => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -139,10 +141,22 @@ const LocationModal = ({ isOpen, onClose, onLocationSelect }) => {
         {/* Left Side: Search & List */}
         <div className="w-full md:w-[40%] flex flex-col border-r border-[#2a2a2a] bg-[#1a1a1a]">
           <div className="p-4 border-b border-[#2a2a2a] flex items-center justify-between">
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
-              <MapPin className="text-[#e50914]" size={24} />
-              Select Location
-            </h2>
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => {
+                  onClose();
+                  navigate('/');
+                }}
+                className="p-1 rounded-full text-gray-400 hover:text-white hover:bg-[#333] transition-colors"
+                title="Go to Home"
+              >
+                <ArrowLeft size={20} />
+              </button>
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <MapPin className="text-[#e50914]" size={24} />
+                Select Location
+              </h2>
+            </div>
             <button onClick={onClose} className="p-1 rounded-full text-gray-400 hover:text-white hover:bg-[#333] transition-colors md:hidden">
               <X size={20} />
             </button>

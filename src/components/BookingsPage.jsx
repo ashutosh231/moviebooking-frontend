@@ -124,14 +124,14 @@ function getImageUrl(maybe) {
 }
 
 /* ---------- helper to read stored token ---------- */
-function getStoredToken() {
-  return (
-    localStorage.getItem("token") ||
-    localStorage.getItem("authToken") ||
-    localStorage.getItem("accessToken") ||
-    null
-  );
-}
+// function getStoredToken() {
+//   return (
+//     localStorage.getItem("token") ||
+//     localStorage.getItem("authToken") ||
+//     localStorage.getItem("accessToken") ||
+//     null
+//   );
+// }
 
 /* ---------- main component ---------- */
 export default function BookingsPage() {
@@ -213,7 +213,8 @@ export default function BookingsPage() {
         try {
           res = await apiClient.get('/api/bookings/my', { timeout: 15000 });
         } catch (err) {
-          res = await apiClient.get('/api/bookings', { timeout: 15000 });
+          // res = await apiClient.get('/api/bookings', { timeout: 15000 });
+          console.error("Failed to fetch /my bookings, trying fallback /bookings", err);
         }
 
         const data = res?.data || {};
@@ -268,7 +269,9 @@ export default function BookingsPage() {
           const cinemaName = b.cinema?.name || "CineVerse Cinema";
           const cinemaAddress = b.cinema?.address || "Mumbai, India";
 
-          return { id, title, poster, category, durationMins, slotTime, auditorium, seats, amount, amountPaise: b.amountPaise, raw: b, cinemaName, cinemaAddress };
+          return { id, title, poster, category, durationMins, slotTime, auditorium, seats, amount, amountPaise: b.amountPaise, raw: b, cinemaName, cinemaAddress,
+                   status: (b.status || "").toLowerCase(),
+                   cancellationReason: b.cancellationReason || "" };
         });
 
 
@@ -391,7 +394,17 @@ export default function BookingsPage() {
                         </div>
 
                         <div className={bookingsPageStyles.category}>
-                          <div className="hidden lg:block">{b.category}</div>
+                          {b.status === 'cancelled' ? (
+                            <span style={{
+                              display: 'inline-flex', alignItems: 'center', gap: 5,
+                              padding: '4px 12px', borderRadius: 20,
+                              background: 'rgba(225,29,72,0.12)', border: '1px solid rgba(225,29,72,0.4)',
+                              color: '#f87171', fontWeight: 700, fontSize: 11, letterSpacing: '1px',
+                              textTransform: 'uppercase',
+                            }}>Cancelled</span>
+                          ) : (
+                            <div className="hidden lg:block">{b.category}</div>
+                          )}
                         </div>
                       </div>
 
@@ -447,6 +460,24 @@ export default function BookingsPage() {
                       </div>
                     </div>
 
+                    {/* Cancellation reason banner (shown only when cancelled) */}
+                    {b.status === 'cancelled' && (
+                      <div style={{
+                        margin: '8px 0 0', padding: '14px 18px',
+                        background: 'rgba(225,29,72,0.08)', border: '1px solid rgba(225,29,72,0.3)',
+                        borderRadius: 10,
+                      }}>
+                        <div style={{ fontSize: 11, fontWeight: 700, color: '#f87171', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: 4 }}>
+                          Cancellation Reason
+                        </div>
+                        <div style={{ fontSize: 13, color: '#fca5a5', lineHeight: 1.5 }}>
+                          {b.cancellationReason || 'Cancelled by administrator.'}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* QR + Download — hidden for cancelled bookings */}
+                    {b.status !== 'cancelled' && (
                     <div className={bookingsPageStyles.qrSection}>
                       <div className={bookingsPageStyles.qrLabel}>
                         <QrCode className={bookingsPageStyles.qrIcon} />
@@ -469,6 +500,7 @@ export default function BookingsPage() {
                         )}
                       </div>
                     </div>
+                    )}
                   </div>
 
                   <div className={bookingsPageStyles.toggleButton}>

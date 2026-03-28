@@ -211,17 +211,17 @@ export const bookingsPageStyles = {
   grid: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
 
   // Booking card
-  bookingCard: "bg-gradient-to-b from-gray-900 to-black rounded-2xl p-4 border border-red-800 shadow-xl",
+  bookingCard: "bg-gradient-to-b from-gray-900 to-black rounded-2xl p-4 border border-red-800 shadow-xl overflow-hidden",
   cardContent: "flex flex-col lg:flex-row items-start gap-4",
   posterContainer: "w-full lg:w-24 h-44 lg:h-36 flex-shrink-0 overflow-hidden rounded-md border border-red-700",
   poster: "w-full h-full object-cover",
-  cardInfo: "flex-1 w-full",
-  cardHeader: "flex items-start justify-between gap-3",
-  movieTitle: "text-lg font-bold text-red-400 flex items-center gap-2",
-  movieIcon: "w-5 h-5",
+  cardInfo: "flex-1 min-w-0 w-full",
+  cardHeader: "flex flex-wrap sm:flex-nowrap items-start justify-between gap-3",
+  movieTitle: "text-lg font-bold text-red-400 flex items-center gap-2 break-words",
+  movieIcon: "w-5 h-5 flex-shrink-0 mt-1",
   bookingId: "text-xs text-gray-400 mt-1",
   bookingIdText: "font-mono text-xs text-gray-200",
-  category: "text-xs text-gray-400 text-right",
+  category: "text-xs text-gray-400 flex-shrink-0 mt-2 sm:mt-0",
 
   // Movie details
   details: "mt-3 text-sm text-gray-300 flex flex-col sm:flex-row sm:items-center sm:gap-4",
